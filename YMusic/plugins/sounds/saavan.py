@@ -6,11 +6,9 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from YMusic.core import userbot
 from YMusic.misc import SUDOERS
+from config import PREFIX, RPREFIX  # Fixed import
 
-PREFIX = config.PREFIX
-RPREFIX = config.RPREFIX
-
-@Client.on_message(filters.command(["svn", "saavn"], PREFIX) & filters.me)
+@Client.on_message(filters.command(["svn", "saavn"], [PREFIX, RPREFIX]) & filters.me)
 async def saavn(client: Client, message: Message):
     chat_id = message.chat.id
     if len(message.command) > 1:
