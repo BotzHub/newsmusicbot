@@ -1,4 +1,3 @@
-from httpx import delete
 from YMusic import app, call
 from YMusic.core import userbot
 from YMusic.utils.queue import QUEUE, pop_an_item, get_queue, clear_queue
@@ -83,10 +82,10 @@ async def _aSkip(_, message):
         else:
             clear_queue(chat_id)
             await stop(chat_id)
-            return await m.edit_text("Gadhe queue empty hai... songs queue me toh daal")
+            return await m.edit_text("Queue is empty")
     else:
         return await message.reply_text(
-            "Abe saale... (Maaf karna wo gusse me thora sa idhar udhar ho jata hu) terepe perms naa hai admins ko bol..."
+            "Sorry, because of users misuse, only admins are allowed to use this command!"
         )
 
 @app.on_message(filters.command("queue", [PREFIX, RPREFIX]) & filters.group)
