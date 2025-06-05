@@ -1,15 +1,13 @@
+import os
 from YMusic import app
 from YMusic.core import userbot
-from YMusic.utils.ytDetails import searchYt, extract_video_id
+from YMusic.utils.ytDetails import search_api, searchYt, extract_video_id
 from YMusic.utils.queue import QUEUE, add_to_queue
-from YMusic.misc import SUDOERS
-
+from YMusic.plugins.sounds.play import ytdl
 from pyrogram import filters
 
-from pytgcalls.types import MediaStream
 
 import asyncio
-import random
 import time
 
 import config
@@ -19,23 +17,6 @@ VIDEO_PLAY = ["VP", "VPLAY"]
 PREFIX = config.PREFIX
 
 RPREFIX = config.RPREFIX
-
-
-async def ytdl(link):
-    proc = await asyncio.create_subprocess_exec(
-        "yt-dlp",
-        "-g",
-        "-f",
-        "best[height<=?720][width<=?1280]",
-        f"{link}",
-        stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.PIPE,
-    )
-    stdout, stderr = await proc.communicate()
-    if stdout:
-        return 1, stdout.decode().split("\n")[0]
-    else:
-        return 0, stderr.decode()
 
 
 async def bash(cmd):
@@ -53,7 +34,7 @@ async def bash(cmd):
 async def processReplyToMessage(message):
     msg = message.reply_to_message
     if msg.video or msg.video_note:
-        m = await message.reply_text("Rukja...Tera Video Download kar raha hu...")
+        m = await message.reply_text("Please wait... downloading your video...")
         video_original = await msg.download()
         return video_original, m
     else:
@@ -78,10 +59,10 @@ async def _vPlay(_, message):
             input_filename, m = await processReplyToMessage(message)
             if input_filename is None:
                 await message.reply_text(
-                    "Video pe reply kon karega mai? ya phir video link kon dalega mai? 🤔"
+                    "Kindly reply to a video file or give song name/yt link"
                 )
                 return
-            await m.edit("Rukja...Tera Video Play kar raha hu...")
+            await m.edit("Please wait.. Playing your video in a while")
             Status, Text = await userbot.playVideo(chat_id, input_filename)
             if Status == False:
                 await m.edit(Text)
@@ -96,41 +77,58 @@ async def _vPlay(_, message):
                         message.reply_to_message.link,
                     )
                     await m.edit(
-                        f"# {queue_num}\n{message.reply_to_message.video.title[:19]}\nTera video queue me daal diya hu"
+                        f"# {queue_num}\n{message.reply_to_message.video.title[:19]}\nYour song has been added to the queue"
                     )
                     return
                 finish_time = time.time()
                 total_time_taken = str(int(finish_time - start_time)) + "s"
                 await m.edit(
-                    f"Tera video play kar rha hu aaja vc\n\nVideoName:- [{message.reply_to_message.video.title[:19]}]({message.reply_to_message.link})\nDuration:- {message.reply_to_message.video.duration}\nTime taken to play:- {total_time_taken}",
+                    f"Playing your video\n\nVideoName:- [{message.reply_to_message.video.title[:19]}]({message.reply_to_message.link})\nDuration:- {message.reply_to_message.video.duration}\nTime taken to play:- {total_time_taken}\n\n Powered by: @astrousersbot",
                     disable_web_page_preview=True,
                 )
 
     elif (len(message.command)) < 2:
-        await message.reply_text("Link kon daalega mai? 🤔")
+        await message.reply_text("Kindly provide song name or link")
     else:
-        m = await message.reply_text("Rukja...Tera video dhund raha hu...")
+        m = await message.reply_text("Please wait finding your song")
         query = message.text.split(maxsplit=1)[1]
         video_id = extract_video_id(query)
         is_videoId = True if video_id is not None else False
         video_id = query if video_id is None else video_id
+        is_alt_method = False
         try:
             title, duration, link = searchYt(video_id, is_videoId)
             if (title, duration, link) == (None, None, None):
                 return await m.edit("No results found")
         except Exception as e:
-            await message.reply_text(f"Error:- <code>{e}</code>")
-            return
+            if "This request was detected as a bot" in str(e):
+                await m.edit(
+                    "This request was detected as a bot... Switching to alternate method"
+                )
+                title, duration, ytlink = search_api(video_id, is_videoId, True)
+                is_alt_method = True
+                link = None
+                if (title, duration, ytlink) == (None, None, None):
+                    return await m.edit("No results found")
+                if ytlink is None:
+                    return await m.edit("No results found")
+            else:
+                await message.reply_text(f"Error:- <code>{e}</code>")
+                await m.delete()
+                return
 
-        await m.edit("Rukja...Tera video download kar raha hu...")
-        resp, ytlink = await ytdl(link)
+        await m.edit("Please wait downloading video of requested song")
+        resp = 1
+        if not is_alt_method:
+            format = "best[height<=?720][width<=?1280]"
+            resp, ytlink = await ytdl(format, link)
         if resp == 0:
             await m.edit(f"❌ yt-dl issues detected\n\n» `{ytlink}`")
         else:
             if chat_id in QUEUE:
                 queue_num = add_to_queue(chat_id, title[:19], duration, ytlink, link)
                 await m.edit(
-                    f"# {queue_num}\n{title[:19]}\nTera Video queue me daal diya hu"
+                    f"# {queue_num}\n{title[:19]}\nYour song has been added to the queue"
                 )
                 return
             # await asyncio.sleep(2)
@@ -144,6 +142,6 @@ async def _vPlay(_, message):
             finish_time = time.time()
             total_time_taken = str(int(finish_time - start_time)) + "s"
             await m.edit(
-                f"Playing your video\n\nVideoName:- [{title[:19]}]({link})\nDuration:- {duration}\nTime taken to play:- {total_time_taken}",
+                f"Playing your video\n\nVideoName:- [{title[:19]}]({link})\nDuration:- {duration}\nTime taken to play:- {total_time_taken}\n\n Powered by: @astrousersbot",
                 disable_web_page_preview=True,
             )
