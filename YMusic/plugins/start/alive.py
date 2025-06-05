@@ -12,4 +12,4 @@ PREFIX = config.PREFIX
 @app.on_message(filters.command(PING_COMMAND, PREFIX))
 async def _ping(_, message):
     uptime = get_readable_time(int(time.time() - _boot_))
-    await message.reply_text(f"Jinda hu saale...since {uptime}")
+    await message.reply_text(f"Heya! I'm UP & RUNNING...since {uptime}")
