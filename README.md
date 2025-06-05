@@ -28,11 +28,11 @@ sudo apt update && sudo apt upgrade -y && sudo apt install python3 git yt-dlp ff
 ```
 
 ```sh
-git clone https://github.com/EnhancedProtection/YMusic-Userbot.git
+git clone https://github.com/The-AstroTg-Project/musicbot
 ```
 
 ```sh
-cd YMusic-Userbot && pip install -r requirements.txt
+cd musicbot && pip install -r requirements.txt
 ```
 
 ### Fill the required data in "config/config.py" file
@@ -96,7 +96,7 @@ bash start
 
 ## License
 
-[MIT](https://github.com/EnhancedProtection/YMusic-Userbot/blob/main/LICENSE)
+[MIT](https://github.com/The-AstroTg-Project/musicbot/blob/main/LICENSE)
 
 --------
 
