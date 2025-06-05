@@ -6,3 +6,7 @@ pytubefix
 speedtest-cli
 ffprobe
 httpx
+requests
+gunicorn
+flask
+ffmpeg-python
