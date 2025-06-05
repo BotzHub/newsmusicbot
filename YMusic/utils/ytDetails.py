@@ -1,5 +1,8 @@
+import requests
 from pytubefix import Search, YouTube as pyYouTube, Playlist
 from urllib.parse import urlparse, parse_qs
+
+API_URL = "https://apis.davidcyriltech.my.id/"
 
 
 def searchYt(query, is_videoId=False):
@@ -17,6 +20,35 @@ def searchYt(query, is_videoId=False):
             duration = Result.length
             link = Result.watch_url
             return title, duration, link
+    return None, None, None
+
+
+def search_api(query, is_videoId=False, video=False):
+    query = str(query)
+    if is_videoId:
+        response = requests.get(
+            f"{API_URL}download/{'ytmp4' if video else 'ytmp3'}?url=https://youtube.com/watch?v=" + query
+        )
+        data = response.json()
+        if data["success"]:
+            title = data["result"]["title"]
+            duration = "Unknown"
+            link = data["result"]["download_url"]
+            return title, duration, link
+    else:
+        response = requests.get(f"{API_URL}song?query=" + query)
+        data = response.json()
+        if data["status"]:
+            result = data["result"]
+            if result:
+                title = result["title"]
+                duration = result["duration"]
+                link = (
+                    result["video"]["download_url"]
+                    if video
+                    else result["audio"]["download_url"]
+                )
+                return title, duration, link
     return None, None, None
 
 
@@ -43,4 +75,3 @@ def extract_video_id(url):
         query_params = parse_qs(parsed_url.query)
         video_id = query_params.get("v", [None])[0]
     return video_id
-
