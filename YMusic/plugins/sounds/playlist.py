@@ -55,7 +55,7 @@ async def _aPlay(_, message):
                 if videoCount == 0:
                     break
                 elif videoCount is None:
-                    await m.edit("The Playlist is empty!")
+                    await m.edit("The PLaylist is empty!")
                     break
                 add_to_queue(chat_id, title[:19], videoCount, songlink, link)
                 videoCount -= 1
