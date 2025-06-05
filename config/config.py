@@ -11,9 +11,9 @@ OWNER_ID: list[int] = [int(os.getenv("OWNER_ID", 0))]
 
 LOG_GROUP_ID: int = int(os.getenv("LOG_GROUP_ID", 0))
 
-PREFIX: str = str("~")
+PREFIX: str = os.getenv("PREFIX", ".")
 
-RPREFIX: str = str("$")
+RPREFIX: str = os.getenv("RPREFIX", "$")
 
 
 # No Need To Edit Below This
