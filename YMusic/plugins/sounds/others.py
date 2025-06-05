@@ -49,7 +49,7 @@ async def _stop(_, message):
         await message.reply_text(Text)
     else:
         return await message.reply_text(
-            "Abe saale... (Maaf karna wo gusse me thora sa idhar udhar ho jata hu) terepe perms naa hai admins ko bol..."
+            "Sorry, because of users misuse, only admins are allowed to use this command!"
         )
 
 
@@ -78,7 +78,7 @@ async def _pause(_, message):
         await message.reply_text(Text)
     else:
         return await message.reply_text(
-            "Abe saale... (Maaf karna wo gusse me thora sa idhar udhar ho jata hu) terepe perms naa hai admins ko bol..."
+            "Sorry, because of users misuse, only admins are allowed to use this command!"
         )
 
 
@@ -107,7 +107,7 @@ async def _resume(_, message):
         await message.reply_text(Text)
     else:
         return await message.reply_text(
-            "Abe saale... (Maaf karna wo gusse me thora sa idhar udhar ho jata hu) terepe perms naa hai admins ko bol..."
+            "Sorry, because of users misuse, only admins are allowed to use this command!"
         )
 
 
@@ -192,7 +192,7 @@ async def _loop(_, message):
             await message.reply_text("Loop already enabled")
     else:
         return await message.reply_text(
-            "Abe saale... (Maaf karna wo gusse me thora sa idhar udhar ho jata hu) terepe perms naa hai admins ko bol..."
+            "Sorry, because of users misuse, only admins are allowed to use this command!"
         )
 
 
@@ -218,5 +218,5 @@ async def _endLoop(_, message):
                 return await message.reply_text(f"Error:- <code>{e}</code>")
     else:
         return await message.reply_text(
-            "Abe saale... (Maaf karna wo gusse me thora sa idhar udhar ho jata hu) terepe perms naa hai admins ko bol..."
+            "Sorry, because of users misuse, only admins are allowed to use this command!"
         )
