@@ -7,7 +7,8 @@ from pyrogram.types import Message
 from YMusic.core import userbot
 from YMusic.misc import SUDOERS
 
-PREFIX = "!"  # Replace with your actual prefix
+PREFIX = config.PREFIX
+RPREFIX = config.RPREFIX
 
 @Client.on_message(filters.command(["svn", "saavn"], PREFIX) & filters.me)
 async def saavn(client: Client, message: Message):
