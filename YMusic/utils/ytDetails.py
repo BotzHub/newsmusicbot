@@ -1,11 +1,12 @@
-import requests
+import aiohttp
 from pytubefix import Search, YouTube as pyYouTube, Playlist
 from urllib.parse import urlparse, parse_qs
 
-API_URL = "https://apis.davidcyriltech.my.id/"
+API_URL = "https://api.nekorinn.my.id/"
 
 
 def searchYt(query, is_videoId=False):
+    raise Exception("This request was detected as a bot")
     query = str(query)
     if is_videoId:
         video = pyYouTube(f"https://www.youtube.com/watch?v={query}")
@@ -23,32 +24,46 @@ def searchYt(query, is_videoId=False):
     return None, None, None
 
 
-def search_api(query, is_videoId=False, video=False):
+async def search_api(query, is_videoId=False, video=False):
     query = str(query)
-    if is_videoId:
-        response = requests.get(
-            f"{API_URL}download/{'ytmp4' if video else 'ytmp3'}?url=https://youtube.com/watch?v=" + query
-        )
-        data = response.json()
-        if data["success"]:
-            title = data["result"]["title"]
-            duration = "Unknown"
-            link = data["result"]["download_url"]
-            return title, duration, link
-    else:
-        response = requests.get(f"{API_URL}song?query=" + query)
-        data = response.json()
-        if data["status"]:
-            result = data["result"]
-            if result:
-                title = result["title"]
-                duration = result["duration"]
-                link = (
-                    result["video"]["download_url"]
-                    if video
-                    else result["audio"]["download_url"]
-                )
-                return title, duration, link
+    async with aiohttp.ClientSession() as session:
+        if is_videoId:
+            async with session.get(
+                f"{API_URL}downloader/savetube?url=https://youtube.com/watch?v={query}&format={'720' if video else 'mp3'}"
+            ) as response:
+                data = await response.json()
+                print(data)
+                if data["status"] and data["statusCode"] == 200:
+                    result = data["result"]
+                    title = result["title"]
+                    duration = result["duration"]
+                    link = result["download"]
+                    return title, duration, link
+        else:
+            async with session.get(
+                f"{API_URL}downloader/spotifyplay?q={query}", ssl=False
+            ) as response:
+                data = await response.json()
+                print(data)
+                if data["status"] and data["statusCode"] == 200:
+                    result = data["result"]
+                    title = result["metadata"]["title"]
+                    duration = result["metadata"]["duration"]
+                    link = result["downloadUrl"]
+                    return title, duration, link
+                else:
+                    async with session.get(
+                        f"https://node01.dlapi.app/api/downloader/ytplay-savetube?q={query}"
+                    ) as response:
+                        data = await response.json()
+                        print(data)
+                        if data["status"] and data["statusCode"] == 200:
+                            result = data["result"]
+                            title = result["metadata"]["title"]
+                            duration = result["metadata"]["duration"]
+                            link = result["downloadUrl"]
+                            return title, duration, link
+
     return None, None, None
 
 
