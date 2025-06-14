@@ -105,7 +105,7 @@ async def _vPlay(_, message):
                 await m.edit(
                     "This request was detected as a bot... Switching to alternate method"
                 )
-                title, duration, ytlink = search_api(video_id, is_videoId, True)
+                title, duration, ytlink = await search_api(video_id, is_videoId, True)
                 is_alt_method = True
                 link = None
                 if (title, duration, ytlink) == (None, None, None):
