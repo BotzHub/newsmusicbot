@@ -1,6 +1,6 @@
 import aiohttp
 from pytubefix import Search, YouTube as pyYouTube, Playlist
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qsh
 
 API_URL = "https://api.nekorinn.my.id/"
 
