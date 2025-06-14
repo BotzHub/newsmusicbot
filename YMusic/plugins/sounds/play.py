@@ -112,7 +112,7 @@ async def _aPlay(_, message):
                     "This request was detected as a bot... Switching to alternate method"
                 )
                 await m.edit("Searching for your song...")
-                title, duration, songlink = search_api(video_id, is_videoId)
+                title, duration, songlink = await search_api(video_id, is_videoId)
                 is_alt_method = True
                 link = None
                 if (title, duration, songlink) == (None, None, None):
