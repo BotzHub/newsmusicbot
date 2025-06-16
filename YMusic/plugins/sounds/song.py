@@ -6,7 +6,14 @@ import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from config.config import PREFIX as prefix
+import config
+
+PLAY_COMMAND = ["Su", "Song"]
+
+PREFIX = config.PREFIX
+
+RPREFIX = config.RPREFIX
+
 
 
 # ✅ Custom upload progress function (replaces missing one)
