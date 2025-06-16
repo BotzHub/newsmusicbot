@@ -6,8 +6,22 @@ import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-from YMusic.utils.formaters import progress
 from config.config import PREFIX as prefix
+
+
+# ✅ Custom upload progress function (replaces missing one)
+async def progress(current, total, message, start):
+    now = time.time()
+    diff = now - start
+    if round(diff % 5.0) == 0 or current == total:
+        percentage = current * 100 / total
+        speed = current / diff
+        eta = (total - current) / speed if speed != 0 else 0
+        await message.edit(
+            f"**Uploading:** {current * 100 // total:.1f}%\n"
+            f"**Speed:** {speed / 1024:.2f} KB/s\n"
+            f"**ETA:** {round(eta)}s"
+        )
 
 
 @Client.on_message(filters.command(["svn", "saavn"], prefix) & filters.me)
@@ -35,12 +49,11 @@ async def saavn(client: Client, message: Message):
         thumb = song_details["image"][1]["url"]
         song_url = song_details["downloadUrl"][-1]["url"]
 
-        await ms.edit_text(f"<code>Found: {song_name} </code>\n Downloading...")
+        await ms.edit_text(f"<code>Found: {song_name} </code>\nDownloading...")
         with open(f"{song_name}.jpg", "wb") as f:
             f.write(requests.get(thumb).content)
 
         song = requests.get(song_url)
-
         with open(f"{song_name}.mp3", "wb") as f:
             f.write(song.content)
 
@@ -55,6 +68,8 @@ async def saavn(client: Client, message: Message):
             thumb=f"{song_name}.jpg",
         )
         await ms.delete()
+
+        # Clean up
         if os.path.exists(f"{song_name}.jpg"):
             os.remove(f"{song_name}.jpg")
         if os.path.exists(f"{song_name}.mp3"):
@@ -62,7 +77,8 @@ async def saavn(client: Client, message: Message):
     else:
         await ms.edit_text(f"<code>No results found for {query}</code>")
 
-#Optional if You Have Help Menu
-#modules_help["song"] = {
-    #"svn": "search, download and upload songs from Saavn",
-#}
+
+# Optional help dictionary (disabled for your bot type)
+# modules_help["song"] = {
+#     "svn": "search, download and upload songs from Saavn",
+# }
