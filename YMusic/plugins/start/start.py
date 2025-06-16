@@ -11,6 +11,7 @@ HELP_MESSAGE = f"""
 
 **Commands:**
 - `{PREFIX}start` - Check if the bot is online
+- `{PREFIX}svn` - Check if the bot is online
 - `{PREFIX}ping` - Check the bot's ping
 - `{PREFIX}play [name|link|reply]` - Play a song audio by giving song name or link or reply to an audio file
 - `{PREFIX}vplay [name|link|reply]` - Play a song video by giving song name or link or reply to a video file
