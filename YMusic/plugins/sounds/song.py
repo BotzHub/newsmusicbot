@@ -63,6 +63,6 @@ async def saavn(client: Client, message: Message):
         await ms.edit_text(f"<code>No results found for {query}</code>")
 
 
-modules_help["song"] = {
-    "svn": "search, download and upload songs from Saavn",
-}
+#modules_help["song"] = {
+    #"svn": "search, download and upload songs from Saavn",
+#}
