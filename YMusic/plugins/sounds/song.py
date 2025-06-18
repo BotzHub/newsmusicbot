@@ -7,7 +7,13 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from YMusic.utils.formaters import progress
-from config.config import PREFIX as prefix
+import config
+
+PLAY_COMMAND = ["Su", "Svn"]
+
+PREFIX = config.PREFIX
+
+RPREFIX = config.RPREFIX
 
 
 @Client.on_message(filters.command(["svn", "saavn"], prefix) & filters.me)
