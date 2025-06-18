@@ -6,22 +6,8 @@ import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
+from YMusic.utils.formaters import progress
 from config.config import PREFIX as prefix
-
-
-# ✅ Custom upload progress function (replaces missing one)
-async def progress(current, total, message, start):
-    now = time.time()
-    diff = now - start
-    if round(diff % 5.0) == 0 or current == total:
-        percentage = current * 100 / total
-        speed = current / diff
-        eta = (total - current) / speed if speed != 0 else 0
-        await message.edit(
-            f"**Uploading:** {current * 100 // total:.1f}%\n"
-            f"**Speed:** {speed / 1024:.2f} KB/s\n"
-            f"**ETA:** {round(eta)}s"
-        )
 
 
 @Client.on_message(filters.command(["svn", "saavn"], prefix) & filters.me)
@@ -33,10 +19,11 @@ async def saavn(client: Client, message: Message):
         query = message.reply_to_message.text
     else:
         await message.edit(
-            f"<b>Usage: </b><code>{prefix}svn [song name to search & download|upload]</code>"
+            f"<b>Usage:</b> <code>{prefix}svn [song name]</code>"
         )
         return
-    ms = await message.edit_text(f"<code>Searching for {query} on saavn</code>")
+
+    ms = await message.edit_text(f"<code>Searching for {query} on Saavn...</code>")
     response = requests.get(
         f"https://rsjiprivate-api.vercel.app/api/search/songs?query={query}"
     )
@@ -49,7 +36,7 @@ async def saavn(client: Client, message: Message):
         thumb = song_details["image"][1]["url"]
         song_url = song_details["downloadUrl"][-1]["url"]
 
-        await ms.edit_text(f"<code>Found: {song_name} </code>\nDownloading...")
+        await ms.edit_text(f"<code>Found: {song_name}</code>\nDownloading...")
         with open(f"{song_name}.jpg", "wb") as f:
             f.write(requests.get(thumb).content)
 
@@ -57,28 +44,20 @@ async def saavn(client: Client, message: Message):
         with open(f"{song_name}.mp3", "wb") as f:
             f.write(song.content)
 
-        await ms.edit_text(f"<code>Uploading {song_name}... </code>")
+        await ms.edit_text(f"<code>Uploading {song_name}...</code>")
         c_time = time.time()
         await client.send_audio(
             chat_id,
             f"{song_name}.mp3",
-            caption=f"<b>Song Name:</b> {song_name}",
+            caption=f"<b>🎵 Song:</b> {song_name}",
             progress=progress,
             progress_args=(ms, c_time, f"`Uploading {song_name}...`"),
             thumb=f"{song_name}.jpg",
         )
         await ms.delete()
 
-        # Clean up
-        if os.path.exists(f"{song_name}.jpg"):
-            os.remove(f"{song_name}.jpg")
-        if os.path.exists(f"{song_name}.mp3"):
-            os.remove(f"{song_name}.mp3")
+        os.remove(f"{song_name}.jpg")
+        os.remove(f"{song_name}.mp3")
+
     else:
         await ms.edit_text(f"<code>No results found for {query}</code>")
-
-
-# Optional help dictionary (disabled for your bot type)
-# modules_help["song"] = {
-#     "svn": "search, download and upload songs from Saavn",
-# }
